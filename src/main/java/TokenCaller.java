@@ -24,47 +24,47 @@ public class TokenCaller {
 
      public static void main(String[] args) {
 
-         // kart bilgileri ile ticket al?n?r
+         // kart bilgileri ile ticket alınır
          InitOtpPaymentResponse initOtpPaymentResponse = callInitOtpPaymentService();
          if ( initOtpPaymentResponse.getResultCode() == 0 )
-             System.out.println("TICKET ALMA BA?ARILI " + initOtpPaymentResponse.getTicketId() );
+             System.out.println("TICKET ALMA BAŞARILI " + initOtpPaymentResponse.getTicketId() );
          else {
-             System.out.println("TICKET ALMA BA?ARISIZ " + initOtpPaymentResponse.getTicketId() + " HATA : " +
+             System.out.println("TICKET ALMA BAŞARISIZ " + initOtpPaymentResponse.getTicketId() + " HATA : " +
                   initOtpPaymentResponse.getResultMsg() );
              return;
          }
 
          boolean isOtpValidated = false;
-         // ivr ak???nda m�?teriden al?nan otpCode un do?rulamas? yap?l?r
+         // ivr akışında müşteriden alınan otpCode un doğrulaması yapılır
          int tryCount = initOtpPaymentResponse.getOtpInfo().getAllowedOtpAttempts();
          for ( int i = 0 ; i < tryCount ; i ++ ) {
              CheckOtpResponse checkOtpResponse = callCheckOtpService(initOtpPaymentResponse);
              if (checkOtpResponse.getResultCode() == 0) {
-                 System.out.println("OTP DO?RULAMASI BA?ARILI ");
+                 System.out.println("OTP DOĞRULAMASI BAŞARILI ");
                  isOtpValidated = true;
                  break;
              }
-             System.out.println("OTP DO?RULAMASI BA?ARISIZ, TEKRAR DENEY?N ");
+             System.out.println("OTP DOĞRULAMASI BAŞARISIZ, TEKRAR DENEYİN ");
          }
 
          if ( ! isOtpValidated ){
-             System.out.println("DO?RULAMA YAPILAMADI, ??LEM?N?Z? GER�EKLE?T?REM?YORUZ");
+             System.out.println("DOĞRULAMA YAPILAMADI, İŞLEMİNİZİ GERÇEKLEŞTİREMİYORUZ");
              return;
          }
-         // Do?rulamas? yap?lm?? ticket i�in �deme a?n?r, bunun i�in ticketId ve pos bilgileri ge�ilir.
+         // Doğrulaması yapılmış ticket için ödeme alınır, bunun için ticketId ve pos bilgileri geçilir.
          DoOtpPaymentResponse doOtpPaymentResponse = callDoOtpPaymentService(initOtpPaymentResponse);
 
          if ( doOtpPaymentResponse.getResultCode() == 0 )
-             System.out.println("�DEME BA?ARILI");
+             System.out.println("ÖDEME BAŞARILI");
          else
-             System.out.println("�DEME BA?ARISIZ " + doOtpPaymentResponse.getResultMsg());
+             System.out.println("ÖDEME BAŞARISIZ " + doOtpPaymentResponse.getResultMsg());
 
          //islem iptal edilmek isteniyor ise
          DoPaymentReversalResponse doPaymentReversalResponse = callDoPaymentReversalService(initOtpPaymentResponse);
          if ( doPaymentReversalResponse.getResultCode() == 0 )
-             System.out.println("iptal BA?ARILI");
+             System.out.println("İPTAL BAŞARILI");
          else
-             System.out.println("iptal BA?ARISIZ " + doOtpPaymentResponse.getResultMsg());
+             System.out.println("İPTAL BAŞARISIZ " + doOtpPaymentResponse.getResultMsg());
 
          return ;
     }
